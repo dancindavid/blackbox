@@ -1,33 +1,25 @@
 package com.mycompany.rest;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.enterprise.context.RequestScoped;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.websocket.server.PathParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
 import com.mycompany.domain.Algorithm;
+import com.mycompany.domain.Device;
 import com.mycompany.domain.Execution;
 import com.mycompany.repository.AlgorithmRepository;
 import com.mycompany.repository.ExecutionRepository;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-
 @Stateless
-@RequestScoped
 @Path("/algorithm")
 @Produces("application/json")
 @Consumes("application/json")
@@ -39,35 +31,36 @@ public class AlgorithmResource {
 	private ExecutionRepository executionRepository;
 
 	@GET
-	@Path("/{uuid}")
-	public Response getById(@PathParam("uuid") UUID uuid) {
-		Algorithm algorithm = algorithmRepository.getById(uuid);
+	@Path("/{key}")
+	public Response findById(@PathParam("key") String key) {
+		Optional<Algorithm> algorithm = algorithmRepository.findById(key);
+
+		if(algorithm.isEmpty()) {
+			return Response.status(404).build();
+		}
 		
-		GenericEntity<Algorithm>>
-		
-		return Response.ok(algorithm).build();
+		return Response.ok(algorithm.get()).build();
 	}
 	
-	@PUT
-	@Path("/{uuid}/run")
-	public Response runAlgorithm(@PathParam("uuid") UUID uuid) {
-		Algorithm algorithm = algorithmRepository.getById(uuid);
-		Execution execution = algorithm.run();
-		executionRepository.create(execution);
-		return Response.ok(execution).build();
+	@POST
+	@Path("/{key}/run")
+	public Response runAlgorithm(@PathParam("key") String key, Device device) {
+		Optional<Algorithm> algorithm = algorithmRepository.findById(key);
+		
+		Optional<Execution> execution = algorithm.map(alg->alg.run(device));
+		
+		if(execution.isEmpty()) {
+			return Response.status(404).build();
+		}
+		
+		Execution newExecution = executionRepository.save(execution.get());
+		return Response.ok(newExecution).build();
 		
 	}
 
 	@GET
-	public Response getAll() {
-		List<Algorithm> algorithms = algorithmRepository.getAll();
-		GenericEntity<List<Algorithm>> algorithmWrapper = new GenericEntity<List<Algorithm>>(algorithms) {};
-		return Response.ok(algorithmWrapper).build();
+	public Response findAll() {
+		Iterable<Algorithm> algorithms = algorithmRepository.findAll();
+		return Response.ok(algorithms).build();
 	}
-	
-//	@POST
-//	public Response save(final Algorithm algorithm) {
-//		Algorithm persistedAlgorithm =  algorithmRepository.save(algorithm);
-//		return Response.ok(persistedAlgorithm).build();
-//	}
 }

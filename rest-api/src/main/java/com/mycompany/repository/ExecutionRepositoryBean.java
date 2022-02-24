@@ -1,34 +1,44 @@
 package com.mycompany.repository;
 
-import javax.ejb.Stateless;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
+import javax.ejb.Singleton;
+
+import com.mycompany.domain.Algorithm;
 import com.mycompany.domain.Execution;
 
-@Stateless
+import lombok.Data;
+
+@Singleton
+@Data
 public class ExecutionRepositoryBean implements ExecutionRepository {
 
+	Map<UUID, Execution> repository = new HashMap<UUID, Execution>();
+
 	@Override
-	public Execution create() {
-		// TODO Auto-generated method stub
-		return null;
+	public Optional<Execution> findById(UUID uuid) {
+		Optional<Execution> execution = Optional.of(repository.get(uuid));
+
+		return execution;
 	}
 
 	@Override
-	public Execution getById(String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Execution save(Execution execution) {
+		repository.put(execution.getUuid(), execution);
+		return repository.get(execution.getUuid());
 	}
 
 	@Override
-	public Execution saveById(String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public void deleteById(UUID uuid) {
+		repository.remove(uuid);
 	}
-
+	
 	@Override
-	public Execution deleteById(String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<Execution> findAll() {
+		return repository.values();
 	}
 
 }

@@ -1,50 +1,50 @@
 package com.mycompany.repository;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 
 import com.mycompany.domain.Algorithm;
+import com.mycompany.domain.DamageCalculation;
 import com.mycompany.domain.Execution;
 
-@Stateless
-public class AlgorithmRepositoryBean implements AlgorithmRepository {
+import lombok.Data;
+import lombok.NonNull;
 
-	@Override
-	public Algorithm create() {
-		// TODO Auto-generated method stub
-		return null;
+@Singleton
+@Data
+public class AlgorithmRepositoryBean implements AlgorithmRepository {
+	@NonNull
+	Map<String, Algorithm> repository = new HashMap<String, Algorithm>();
+
+	public AlgorithmRepositoryBean() {
+		Algorithm sqrtAlgorithm = new Algorithm("sqrt", DamageCalculation.sqrt);
+
+		save(sqrtAlgorithm);
 	}
 
 	@Override
-	public Algorithm getById(UUID uuid) {
-		// TODO Auto-generated method stub
-		return null;
+	public Optional<Algorithm> findById(String key) {
+		Optional<Algorithm> algorithm = Optional.of(repository.get(key));
+
+		return algorithm;
 	}
 
 	@Override
 	public Algorithm save(Algorithm algorithm) {
-		// TODO Auto-generated method stub
-		return null;
+		return repository.put(algorithm.getKey(), algorithm);
 	}
 
 	@Override
-	public Algorithm deleteById(UUID uuid) {
-		// TODO Auto-generated method stub
-		return null;
+	public void deleteById(String key) {
+		repository.remove(key);
 	}
 
 	@Override
-	public Execution executeById(UUID uuid) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Algorithm> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<Algorithm> findAll() {
+		return repository.values();
 	}
 
 }

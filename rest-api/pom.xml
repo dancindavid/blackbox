@@ -6,17 +6,19 @@
     <groupId>com.mycompany</groupId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-    <artifactId>Weatherman</artifactId>
+    <artifactId>rest-api</artifactId>
     <packaging>war</packaging>
     <dependencies>
     </dependencies>
     <build>
-        <finalName>connection-manager</finalName>
+        <finalName>rest-api</finalName>
 	    <plugins>
+	    <!--
 			<plugin>
 				<groupId>org.wildfly.plugins</groupId>
 				<artifactId>wildfly-maven-plugin</artifactId>
 			</plugin>
+		-->
 		</plugins>
     </build>
 </project>

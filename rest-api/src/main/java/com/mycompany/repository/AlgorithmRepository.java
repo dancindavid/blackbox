@@ -1,17 +1,14 @@
 package com.mycompany.repository;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 import com.mycompany.domain.Algorithm;
 import com.mycompany.domain.Execution;
 
 public interface AlgorithmRepository {	
-	Algorithm create();
-	Algorithm getById(UUID uuid);
+	Optional<Algorithm> findById(String key);
 	Algorithm save(Algorithm algorithm);
-	Algorithm deleteById(UUID uuid);
-	Execution executeById(UUID uuid);
-	List<Algorithm> getAll();
+	void deleteById(String key);
+	Iterable<Algorithm> findAll();
 	
 }

@@ -8,7 +8,6 @@ import javax.ejb.Singleton;
 
 import com.mycompany.domain.Algorithm;
 import com.mycompany.domain.DamageCalculation;
-import com.mycompany.domain.Execution;
 
 import lombok.Data;
 import lombok.NonNull;

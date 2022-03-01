@@ -3,8 +3,10 @@ package com.mycompany.rest;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.websocket.server.PathParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -14,6 +16,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.StatusType;
 
 import com.mycompany.domain.Device;
 import com.mycompany.domain.Execution;
@@ -28,22 +31,25 @@ public class ExecutionResource {
 	@EJB
 	ExecutionRepository repository;
 	
-	@POST
-	@Path("/{uuid}/run")
-	public Response run(@PathParam("uuid") UUID uuid, Device device) {
-		Optional<Execution> execution = repository.findById(uuid);
-		if(execution.isEmpty()) {
-			return Response.status(404).build();
-		}
-		
-		execution.get().run(device);
-			
-		return Response.ok(execution).build();
-	}
+//	@Resource
+//	ManagedExecutorService service;
+	
+//	@POST
+//	@Path("/{uuid}/run")
+//	public Response run(@PathParam("uuid") UUID uuid, Device device) {
+//		Optional<Execution> execution = repository.findById(uuid);
+//		if(execution.isEmpty()) {
+//			return Response.status(404).build();
+//		}
+//		
+//		execution.get().run();
+//			
+//		return Response.ok(execution).build();
+//	}
 	
 	@GET
 	@Path("/{uuid}")
-	Response findById(@PathParam("uuid") UUID uuid) {
+	public Response findById(@PathParam("uuid") UUID uuid) {
 		Optional<Execution> execution = repository.findById(uuid);
 		
 		if(execution.isEmpty()) {

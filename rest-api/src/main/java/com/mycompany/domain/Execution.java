@@ -1,43 +1,52 @@
 package com.mycompany.domain;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
-import java.util.concurrent.Future;
 
-import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.json.bind.annotation.JsonbTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.NonNull;
 
+//@Resource(name="service", lookup="java:comp/DefaultManagedExecutorService", type=javax.enterprise.concurrent.ManagedExecutorService.class)
 @Data
 public class Execution {
 	UUID uuid = UUID.randomUUID();
+
 	@NonNull
 	final Algorithm algorithm;
 	
+	@JsonIgnore
+	@NonNull
+	final ManagedExecutorService service;
+	@NonNull
+	final Device device;
+
+	Damage damage;
+
 	boolean done = false;
 	boolean running = false;
-	
-	@JsonIgnore
-	Future<Damage> future;
-	
-	@JsonIgnore
-	@Resource
-	ManagedExecutorService service;
 
-	public Future<Damage> run(Device device) {		
-		Future<Damage> localFuture = service.submit(() -> { 
+	public void run() {
+		service.submit(() -> {
+			Instant start;
+			Instant end;
 			setDone(false);
 			setRunning(true);
-			Damage damage = algorithm.getDamageCalculation().apply(device); 
+
+			start = Instant.now();
+			Damage localDamage = algorithm.getDamageCalculation().apply(device);
+			end = Instant.now();
+
+			localDamage.setTimeElapsed(Duration.between(start, end).toString());
+			setDamage(localDamage);
 			setRunning(false);
 			setDone(true);
-			return damage;
+			return localDamage;
 		});
-		
-		setFuture(localFuture);
-		return localFuture;
 	}
 }

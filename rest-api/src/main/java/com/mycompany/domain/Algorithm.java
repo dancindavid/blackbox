@@ -2,6 +2,8 @@ package com.mycompany.domain;
 
 import java.util.function.Function;
 
+import javax.enterprise.concurrent.ManagedExecutorService;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -17,10 +19,9 @@ public class Algorithm {
 	@NonNull
 	final Function<Device, Damage> damageCalculation;
 	
-	public Execution run(Device device) {
-		Execution execution = new Execution(this);
-		
-		execution.run(device);
+	public Execution run(ManagedExecutorService service, Device device) {
+		Execution execution = new Execution(this, service, device);
+		execution.run();
 		
 		return execution;
 	}

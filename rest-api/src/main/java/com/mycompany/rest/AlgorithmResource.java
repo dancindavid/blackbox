@@ -2,8 +2,10 @@ package com.mycompany.rest;
 
 import java.util.Optional;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,6 +31,9 @@ public class AlgorithmResource {
 	
 	@EJB
 	private ExecutionRepository executionRepository;
+	
+	@Resource
+	ManagedExecutorService service;
 
 	@GET
 	@Path("/{key}")
@@ -47,11 +52,11 @@ public class AlgorithmResource {
 	public Response runAlgorithm(@PathParam("key") String key, Device device) {
 		Optional<Algorithm> algorithm = algorithmRepository.findById(key);
 		
-		Optional<Execution> execution = algorithm.map(alg->alg.run(device));
+		Optional<Execution> execution = algorithm.map(alg->alg.run(service, device));
 		
-		if(execution.isEmpty()) {
-			return Response.status(404).build();
-		}
+//		if(execution.isEmpty()) {
+//			return Response.status(404).build();
+//		}
 		
 		Execution newExecution = executionRepository.save(execution.get());
 		return Response.ok(newExecution).build();

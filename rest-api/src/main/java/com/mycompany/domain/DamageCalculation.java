@@ -2,6 +2,7 @@ package com.mycompany.domain;
 
 import java.util.function.Function;
 
+
 public class DamageCalculation {
 	public static Function<Device, Damage> sqrt = 
 			(device) -> {

@@ -1,6 +1,9 @@
 package com.mycompany.rest;
 
 import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -32,9 +35,11 @@ public class AlgorithmResource {
 	@EJB
 	private ExecutionRepository executionRepository;
 	
-	@Resource
-	ManagedExecutorService service;
-
+	@Resource(name="java:comp/DefaultManagedExecutorService")
+	ExecutorService service;
+	
+	ExecutorService unmanagedService = Executors.newFixedThreadPool(10);
+	
 	@GET
 	@Path("/{key}")
 	public Response findById(@PathParam("key") String key) {
@@ -48,15 +53,31 @@ public class AlgorithmResource {
 	}
 	
 	@POST
-	@Path("/{key}/run")
-	public Response runAlgorithm(@PathParam("key") String key, Device device) {
+	@Path("/{key}/run-managed")
+	public Response runAlgorithmManaged(@PathParam("key") String key, Device device) {
 		Optional<Algorithm> algorithm = algorithmRepository.findById(key);
 		
-		Optional<Execution> execution = algorithm.map(alg->alg.run(service, device));
+		Optional<Execution> execution = algorithm.map(alg->alg.runManaged(service, device));
 		
-//		if(execution.isEmpty()) {
-//			return Response.status(404).build();
-//		}
+		if(execution.isEmpty()) {
+			return Response.status(404).build();
+		}
+		
+		Execution newExecution = executionRepository.save(execution.get());
+		return Response.ok(newExecution).build();
+		
+	}
+	
+	@POST
+	@Path("/{key}/run-unmanaged")
+	public Response runAlgorithmUnmanaged(@PathParam("key") String key, Device device) {
+		Optional<Algorithm> algorithm = algorithmRepository.findById(key);
+		
+		Optional<Execution> execution = algorithm.map(alg->alg.runUnmanaged(unmanagedService, device));
+		
+		if(execution.isEmpty()) {
+			return Response.status(404).build();
+		}
 		
 		Execution newExecution = executionRepository.save(execution.get());
 		return Response.ok(newExecution).build();

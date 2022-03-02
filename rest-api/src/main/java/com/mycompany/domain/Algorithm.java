@@ -1,8 +1,7 @@
 package com.mycompany.domain;
 
+import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
-
-import javax.enterprise.concurrent.ManagedExecutorService;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,9 +18,16 @@ public class Algorithm {
 	@NonNull
 	final Function<Device, Damage> damageCalculation;
 	
-	public Execution run(ManagedExecutorService service, Device device) {
+	public Execution runManaged(ExecutorService service, Device device) {
 		Execution execution = new Execution(this, service, device);
-		execution.run();
+		execution.runManaged();
+		
+		return execution;
+	}
+	
+	public Execution runUnmanaged(ExecutorService service, Device device) {
+		Execution execution = new Execution(this, service, device);
+		execution.runUnmanaged();
 		
 		return execution;
 	}

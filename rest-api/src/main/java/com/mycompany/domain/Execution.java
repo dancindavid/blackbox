@@ -3,9 +3,7 @@ package com.mycompany.domain;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
-
-import javax.enterprise.concurrent.ManagedExecutorService;
-import javax.json.bind.annotation.JsonbTransient;
+import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,7 +20,7 @@ public class Execution {
 	
 	@JsonIgnore
 	@NonNull
-	final ManagedExecutorService service;
+	final ExecutorService service;
 	@NonNull
 	final Device device;
 
@@ -30,8 +28,19 @@ public class Execution {
 
 	boolean done = false;
 	boolean running = false;
+	boolean managedThreading;
 
-	public void run() {
+	public void runManaged() {
+		managedThreading = true;
+		run();
+	}
+	
+	public void runUnmanaged() {
+		managedThreading = false;
+		run();
+	}
+	
+	void run() {
 		service.submit(() -> {
 			Instant start;
 			Instant end;

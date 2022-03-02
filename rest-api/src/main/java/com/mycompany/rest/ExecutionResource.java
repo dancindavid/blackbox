@@ -32,7 +32,7 @@ public class ExecutionResource {
 	ExecutionRepository repository;
 	
 //	@Resource
-//	ManagedExecutorService service;
+//	ExecutorService service;
 	
 //	@POST
 //	@Path("/{uuid}/run")

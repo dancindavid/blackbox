@@ -1,7 +1,10 @@
-package com.mycompany.rest;
+package com.mycompany.restresources;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -20,7 +23,11 @@ import javax.ws.rs.core.Response.StatusType;
 
 import com.mycompany.domain.Device;
 import com.mycompany.domain.Execution;
-import com.mycompany.repository.ExecutionRepository;
+import com.mycompany.domain.mappers.AlgorithmMapper;
+import com.mycompany.domain.mappers.ExecutionMapper;
+import com.mycompany.repositories.ExecutionRepository;
+import com.mycompany.shareddomain.dtos.AlgorithmDto;
+import com.mycompany.shareddomain.dtos.ExecutionDto;
 
 
 @Stateless
@@ -56,19 +63,32 @@ public class ExecutionResource {
 			return Response.status(404).build();
 		}
 		
-		return Response.ok(execution.get()).build();
+		return Response.ok(ExecutionMapper.toDto(execution.get())).build();
 	}
 	
 	@GET
 	public Response findAll() {
 		Iterable<Execution> executions = repository.findAll();
-		return Response.ok(executions).build();
+		
+		List<ExecutionDto> dtos = StreamSupport.stream(executions.spliterator(), false)
+				.map(ExecutionMapper::toDto).collect(Collectors.toList());
+		
+		return Response.ok(dtos).build();
 	}
 	
 	@DELETE
 	@Path("/{uuid}")
 	public Response deleteById(@PathParam("uuid") UUID uuid) {
 		repository.deleteById(uuid);
+		
+		return Response.ok().build();
+		
+	}
+	
+	@DELETE
+	@Path("/all")
+	public Response deleteAll() {
+		repository.deleteAll();
 		
 		return Response.ok().build();
 		

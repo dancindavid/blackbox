@@ -1,9 +1,13 @@
-package com.mycompany.rest;
+package com.mycompany.restresources;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -21,8 +25,14 @@ import javax.ws.rs.core.Response;
 import com.mycompany.domain.Algorithm;
 import com.mycompany.domain.Device;
 import com.mycompany.domain.Execution;
-import com.mycompany.repository.AlgorithmRepository;
-import com.mycompany.repository.ExecutionRepository;
+import com.mycompany.domain.mappers.AlgorithmMapper;
+import com.mycompany.domain.mappers.DeviceMapper;
+import com.mycompany.domain.mappers.ExecutionMapper;
+import com.mycompany.repositories.AlgorithmRepository;
+import com.mycompany.repositories.ExecutionRepository;
+import com.mycompany.shareddomain.dtos.AlgorithmDto;
+import com.mycompany.shareddomain.dtos.DeviceDto;
+import com.mycompany.shareddomain.dtos.ExecutionDto;
 
 @Stateless
 @Path("/algorithm")
@@ -36,7 +46,7 @@ public class AlgorithmResource {
 	private ExecutionRepository executionRepository;
 	
 	@Resource(name="java:comp/DefaultManagedExecutorService")
-	ExecutorService service;
+	ExecutorService managedService;
 	
 	ExecutorService unmanagedService = Executors.newFixedThreadPool(10);
 	
@@ -49,44 +59,43 @@ public class AlgorithmResource {
 			return Response.status(404).build();
 		}
 		
-		return Response.ok(algorithm.get()).build();
+		return Response.ok(AlgorithmMapper.toDto(algorithm.get())).build();
 	}
 	
 	@POST
 	@Path("/{key}/run-managed")
-	public Response runAlgorithmManaged(@PathParam("key") String key, Device device) {
-		Optional<Algorithm> algorithm = algorithmRepository.findById(key);
-		
-		Optional<Execution> execution = algorithm.map(alg->alg.runManaged(service, device));
-		
-		if(execution.isEmpty()) {
-			return Response.status(404).build();
-		}
-		
-		Execution newExecution = executionRepository.save(execution.get());
-		return Response.ok(newExecution).build();
-		
+	public Response runAlgorithmManaged(@PathParam("key") String key, DeviceDto deviceDto) {
+		return runAlgorithm(key, deviceDto, managedService);		
 	}
 	
 	@POST
 	@Path("/{key}/run-unmanaged")
-	public Response runAlgorithmUnmanaged(@PathParam("key") String key, Device device) {
+	public Response runAlgorithmUnmanaged(@PathParam("key") String key, DeviceDto deviceDto) {
+		return runAlgorithm(key, deviceDto, unmanagedService);	
+	}
+	
+	private Response runAlgorithm(String key, DeviceDto deviceDto, ExecutorService service) {
 		Optional<Algorithm> algorithm = algorithmRepository.findById(key);
 		
-		Optional<Execution> execution = algorithm.map(alg->alg.runUnmanaged(unmanagedService, device));
+		Optional<Execution> execution = algorithm.map(alg->alg.run(service, DeviceMapper.fromDto(deviceDto)));
 		
 		if(execution.isEmpty()) {
 			return Response.status(404).build();
 		}
 		
 		Execution newExecution = executionRepository.save(execution.get());
-		return Response.ok(newExecution).build();
-		
+
+		return Response.ok(ExecutionMapper.toDto(newExecution)).build();
 	}
 
 	@GET
 	public Response findAll() {
 		Iterable<Algorithm> algorithms = algorithmRepository.findAll();
-		return Response.ok(algorithms).build();
+		
+		List<AlgorithmDto> dtos = StreamSupport.stream(algorithms.spliterator(), false)
+		.map(AlgorithmMapper::toDto).collect(Collectors.toList());
+		
+		
+		return Response.ok(dtos).build();
 	}
 }

@@ -8,16 +8,21 @@
 	</parent>
 	<artifactId>rest-api</artifactId>
 	<packaging>war</packaging>
-	<dependencies></dependencies>
+	<dependencies>
+		<dependency>
+			<artifactId>shared-domain</artifactId>
+			<groupId>${project.parent.groupId}</groupId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
+	</dependencies>
 	<build>
 		<finalName>rest-api</finalName>
 		<plugins>
-			<!--
 			<plugin>
 				<groupId>org.wildfly.plugins</groupId>
 				<artifactId>wildfly-maven-plugin</artifactId>
 			</plugin>
-		-->
 		</plugins>
 	</build>
 </project>

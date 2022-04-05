@@ -1,4 +1,4 @@
-package com.mycompany.repository;
+package com.mycompany.repositories;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +34,11 @@ public class ExecutionRepositoryBean implements ExecutionRepository {
 	@Override
 	public void deleteById(UUID uuid) {
 		repository.remove(uuid);
+	}
+	
+	@Override
+	public void deleteAll() {
+		repository.clear();
 	}
 	
 	@Override

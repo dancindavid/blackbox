@@ -2,18 +2,27 @@ package com.mycompany.domain;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 //@Resource(name="service", lookup="java:comp/DefaultManagedExecutorService", type=javax.enterprise.concurrent.ManagedExecutorService.class)
+
+@Builder
 @Data
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class Execution {
-	UUID uuid = UUID.randomUUID();
+	@NonNull
+	final UUID uuid = UUID.randomUUID();
 
 	@NonNull
 	final Algorithm algorithm;
@@ -24,34 +33,30 @@ public class Execution {
 	@NonNull
 	final Device device;
 
-	Damage damage;
+	Optional<Damage> damage = Optional.empty();
 
+	@Builder.Default
+	boolean waiting = false;
+	@Builder.Default
 	boolean done = false;
+	@Builder.Default
 	boolean running = false;
-	boolean managedThreading;
-
-	public void runManaged() {
-		managedThreading = true;
-		run();
-	}
-	
-	public void runUnmanaged() {
-		managedThreading = false;
-		run();
-	}
 	
 	void run() {
+		setWaiting(true);
+		
 		service.submit(() -> {
 			Instant start;
 			Instant end;
-			setDone(false);
+			
+			setWaiting(false);
 			setRunning(true);
 
 			start = Instant.now();
-			Damage localDamage = algorithm.getDamageCalculation().apply(device);
+			Optional<Damage> localDamage = Optional.ofNullable(algorithm.getDamageCalculation().apply(device));
 			end = Instant.now();
 
-			localDamage.setTimeElapsed(Duration.between(start, end).toString());
+			localDamage.get().setTimeElapsed(Duration.between(start, end).toString());
 			setDamage(localDamage);
 			setRunning(false);
 			setDone(true);

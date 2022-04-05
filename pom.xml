@@ -74,6 +74,7 @@
 
 	<modules>
 		<module>rest-api</module>
+		<module>shared-domain</module>
 	</modules>
 
 	<dependencies>

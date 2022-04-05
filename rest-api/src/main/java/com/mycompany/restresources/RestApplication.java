@@ -1,4 +1,4 @@
-package com.mycompany.rest;
+package com.mycompany.restresources;
 
 
 import javax.ws.rs.ApplicationPath;

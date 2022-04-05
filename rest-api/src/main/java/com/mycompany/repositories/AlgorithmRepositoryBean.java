@@ -1,4 +1,4 @@
-package com.mycompany.repository;
+package com.mycompany.repositories;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import javax.ejb.Singleton;
 
+import com.mycompany.damagecalculations.DamageCalculation;
 import com.mycompany.domain.Algorithm;
-import com.mycompany.domain.DamageCalculation;
 
 import lombok.Data;
 import lombok.NonNull;

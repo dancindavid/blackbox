@@ -1,6 +1,9 @@
-package com.mycompany.domain;
+package com.mycompany.damagecalculations;
 
 import java.util.function.Function;
+
+import com.mycompany.domain.Damage;
+import com.mycompany.domain.Device;
 
 
 public class DamageCalculation {

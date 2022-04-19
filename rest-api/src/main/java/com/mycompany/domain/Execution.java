@@ -46,21 +46,18 @@ public class Execution {
 		setWaiting(true);
 		
 		service.submit(() -> {
-			Instant start;
-			Instant end;
 			
 			setWaiting(false);
 			setRunning(true);
 
-			start = Instant.now();
+			var begin = System.currentTimeMillis();
 			Optional<Damage> localDamage = Optional.ofNullable(algorithm.getDamageCalculation().apply(device));
-			end = Instant.now();
+			var end = System.currentTimeMillis();
 
-			localDamage.get().setTimeElapsed(Duration.between(start, end).toString());
+			localDamage.get().setElapsedTime(end - begin);
 			setDamage(localDamage);
 			setRunning(false);
 			setDone(true);
-			return localDamage;
 		});
 	}
 }

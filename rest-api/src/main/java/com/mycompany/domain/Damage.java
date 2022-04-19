@@ -15,5 +15,5 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public class Damage {
 	double value;
-	String timeElapsed = "";
+	long elapsedTime;
 }

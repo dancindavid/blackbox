@@ -14,5 +14,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DamageDto {
 	double value;
-	String timeElapsed;
+	long elapsedTime;
 }

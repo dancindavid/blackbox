@@ -15,7 +15,7 @@ public class DamageMapper {
 		
 		DamageDto dto = DamageDto.builder()
 					.value(d.getValue())
-					.timeElapsed(d.getTimeElapsed())
+					.elapsedTime(d.getElapsedTime())
 					.build();
 		
 		return dto;		
@@ -26,7 +26,7 @@ public class DamageMapper {
 //		Optional<DamageDto> dto = damage.map(
 //				d -> DamageDto.builder()
 //					.value(d.getValue())
-//					.timeElapsed(d.getTimeElapsed())
+//					.timeElapsed(d.getElapsedTime())
 //					.build());
 //		
 //		return dto;		
@@ -34,7 +34,7 @@ public class DamageMapper {
 	
 	
 	public static Damage fromDto(DamageDto dto) {
-		Damage d = Damage.builder().value(dto.getValue()).timeElapsed(dto.getTimeElapsed()).build();
+		Damage d = Damage.builder().value(dto.getValue()).elapsedTime(dto.getElapsedTime()).build();
 		
 		return d;
 	}

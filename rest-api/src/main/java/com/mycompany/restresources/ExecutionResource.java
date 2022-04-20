@@ -6,27 +6,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.enterprise.concurrent.ManagedExecutorService;
-import javax.websocket.server.PathParam;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.StatusType;
 
-import com.mycompany.domain.Device;
 import com.mycompany.domain.Execution;
-import com.mycompany.domain.mappers.AlgorithmMapper;
 import com.mycompany.domain.mappers.ExecutionMapper;
 import com.mycompany.repositories.ExecutionRepository;
-import com.mycompany.shareddomain.dtos.AlgorithmDto;
 import com.mycompany.shareddomain.dtos.ExecutionDto;
 
 
@@ -54,10 +46,11 @@ public class ExecutionResource {
 //		return Response.ok(execution).build();
 //	}
 	
+
 	@GET
-	@Path("/{uuid}")
-	public Response findById(@PathParam("uuid") UUID uuid) {
-		Optional<Execution> execution = repository.findById(uuid);
+	@Path("/{id}")
+	public Response findById(@PathParam("id") String id) {
+		Optional<Execution> execution = repository.findById(UUID.fromString(id));
 		
 		if(execution.isEmpty()) {
 			return Response.status(404).build();
@@ -78,8 +71,8 @@ public class ExecutionResource {
 	
 	@DELETE
 	@Path("/{uuid}")
-	public Response deleteById(@PathParam("uuid") UUID uuid) {
-		repository.deleteById(uuid);
+	public Response deleteById(@PathParam("id") String id) {
+		repository.deleteById(UUID.fromString(id));
 		
 		return Response.ok().build();
 		

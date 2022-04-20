@@ -1,9 +1,7 @@
 package com.mycompany.restresources;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -12,18 +10,15 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import com.mycompany.domain.Algorithm;
-import com.mycompany.domain.Device;
 import com.mycompany.domain.Execution;
 import com.mycompany.domain.mappers.AlgorithmMapper;
 import com.mycompany.domain.mappers.DeviceMapper;
@@ -32,7 +27,6 @@ import com.mycompany.repositories.AlgorithmRepository;
 import com.mycompany.repositories.ExecutionRepository;
 import com.mycompany.shareddomain.dtos.AlgorithmDto;
 import com.mycompany.shareddomain.dtos.DeviceDto;
-import com.mycompany.shareddomain.dtos.ExecutionDto;
 
 @Stateless
 @Path("/algorithm")
